@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Histórias</title>
+  <title>Diário Online - Persistente</title>
   <style>
     /* Estilos gerais */
     body {
@@ -320,7 +320,7 @@
     const profileContent = document.getElementById('profile-content');
     const backButton = document.getElementById('back-button');
 
-    // Salva os dados no localStorage
+    // Função para salvar os dados no localStorage
     function saveData() {
       localStorage.setItem('diaryUserData', JSON.stringify(userData));
     }
@@ -369,7 +369,7 @@
             <div class="engagement-info">
               <span>👤 ${story.publisher}</span>
               <span>📞 ${story.publisherPhone}</span>
-              <span><em>Views</em> ${story.fakeViews}</span>
+              <span>👁 ${story.fakeViews}</span>
             </div>
           `;
           contentHTML += `<button onclick="deleteStory(${index})">Excluir</button>`;
@@ -379,7 +379,7 @@
             <div class="engagement-info" style="display:none;">
               <span>👤 ${story.publisher}</span>
               <span>📞 ${story.publisherPhone}</span>
-              <span><em>Views</em>  ${story.fakeViews}</span>
+              <span>👁 ${story.fakeViews}</span>
             </div>
           `;
         }
@@ -402,7 +402,7 @@
     // Alterna entre exibir todas as publicações e somente as de outros usuários
     filterOtherBtn.addEventListener('click', () => {
       filterOther = !filterOther;
-      filterOtherBtn.textContent = filterOther ? "Ver Perfil" : "Ver Historias";
+      filterOtherBtn.textContent = filterOther ? "Ver Todas" : "Ver Historias";
       loadStories();
     });
 
@@ -459,22 +459,44 @@
     saveBtn.addEventListener('click', (event) => {
       event.preventDefault();
       const storyText = storyInput.value;
-      const storyImage = storyImageInput.files[0];
+      const storyImageFile = storyImageInput.files[0];
       if (storyText) {
         const initialViews = Math.floor(Math.random() * 20) + 10; // Número entre 10 e 30
-        const newStory = {
-          text: storyText,
-          image: storyImage ? URL.createObjectURL(storyImage) : null,
-          publisher: userData.name,
-          publisherPhone: userData.phoneNumber,
-          fakeViews: initialViews,
-          timestamp: Date.now()
-        };
-        userData.stories.push(newStory);
-        saveData();
-        loadStories();
-        storyInput.value = '';
-        storyImageInput.value = '';
+        // Se houver imagem, converte para Data URL
+        if (storyImageFile) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const imageData = e.target.result;
+            const newStory = {
+              text: storyText,
+              image: imageData,
+              publisher: userData.name,
+              publisherPhone: userData.phoneNumber,
+              fakeViews: initialViews,
+              timestamp: Date.now()
+            };
+            userData.stories.push(newStory);
+            saveData();
+            loadStories();
+            storyInput.value = '';
+            storyImageInput.value = '';
+          };
+          reader.readAsDataURL(storyImageFile);
+        } else {
+          const newStory = {
+            text: storyText,
+            image: null,
+            publisher: userData.name,
+            publisherPhone: userData.phoneNumber,
+            fakeViews: initialViews,
+            timestamp: Date.now()
+          };
+          userData.stories.push(newStory);
+          saveData();
+          loadStories();
+          storyInput.value = '';
+          storyImageInput.value = '';
+        }
       }
     });
 
@@ -482,8 +504,7 @@
     function updateViews() {
       let updated = false;
       userData.stories.forEach(story => {
-        // Incrementa os views de forma aleatória entre 5 e 15
-        let incremento = Math.floor(Math.random() * 11) + 5;
+        let incremento = Math.floor(Math.random() * 11) + 5; // Incremento entre 5 e 15
         story.fakeViews += incremento;
         updated = true;
       });
@@ -492,7 +513,7 @@
         loadStories();
       }
     }
-    setInterval(updateViews, 60000);
+    setInterval(updateViews, 30000);
 
     // Botão "← Voltar" no modal de perfil
     backButton.addEventListener('click', () => {
@@ -510,7 +531,7 @@
       profileModal.style.display = "flex";
     }
 
-    // Fecha o modal de perfil ao clicar fora da área de conteúdo
+    // Fecha o modal de perfil ao clicar fora do conteúdo
     profileModal.addEventListener('click', (event) => {
       if (event.target === profileModal) {
         profileModal.style.display = "none";
