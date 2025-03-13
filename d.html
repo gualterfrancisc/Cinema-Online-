@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Z-Book - Gerenciamento Financeiro</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #3499ff, #7d77ff);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 30px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    header h1 {
+      font-size: 2.5em;
+      background: linear-gradient(45deg, white, white);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    #menu {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    #menu button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      text-align: center;
+    }
+    #menu button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.2);
+      margin: 15px 0;
+    }
+    .custom-alert {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+    .custom-alert button {
+      background: #7d77ff;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      margin-top: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .custom-alert button:hover {
+      background: #3499ff;
+    }
+    canvas {
+      max-width: 100%;
+      margin-top: 20px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Z-Book</h1>
+      <p>Gerenciamento Financeiro</p>
+      <div id="nm">
+        
+      </div>
+    </header>
+    <section id="menu">
+      <button onclick="cadastrarUsuario()">1. Alterar dados do usuário</button>
+      <div class="divider"></div>
+      <button onclick="adicionarDespesa()">2. Adicionar despesa</button>
+      <button onclick="verGerirDespesas()">3. Ver e gerir despesas</button>
+      <button onclick="estadoDespesas()">4. Estado das despesas</button>
+      <div class="divider"></div>
+      <button onclick="adicionarDivida()">5. Adicionar dívida</button>
+      <button onclick="verGerirDividas()">6. Ver e gerir dívidas</button>
+      <button onclick="estadoDividas()">7. Estado das dívidas</button>
+      <div class="divider"></div>
+      <button onclick="analisarSituacaoFinanceira()">8. Análise da situação financeira</button>
+      <button onclick="fazerNegocio()">9. Meu negócio</button>
+      <button onclick="acrescentarRendaExtra()">10. Acrescentar saldo</button>
+     <div class="divider"></div>   
+     <button onclick="estatisticas()">11. Estatísticas Financeiras</button>
+     <button onclick="zerar()">12. Zerar todo dinheiro</button>   
+      <button onclick="sobre()">13. Linha de apoio...</button>
+    </section>
+    <section id="content"></section>
+  </div> 
+  <script>
+  function zerarr(){
+  usuario.saldo = 0;
+  usuario.salario=0;
+  salvarDados(); // Se estiver utilizando a função de persistência
+  }
+  function zerar(){
+    let att = prompt("SEU DINHEIRO SERÁ ZERADO![1-SIM|2-NÃO]") 
+if(att == 1){
+    alert("Seu dinheiro foi zerado!");
+  zerarr();
+    }
+  }
+      function salvarDados() {
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+      localStorage.setItem("despesas", JSON.stringify(despesas));
+      localStorage.setItem("dividas", JSON.stringify(dividas));
+      localStorage.setItem("negocioNome", negocioNome);
+      localStorage.setItem("negocioGastos", JSON.stringify(negocioGastos));
+      localStorage.setItem("negocioProdutos", JSON.stringify(negocioProdutos));
+    }
+    function carregarDados() {
+      if (localStorage.getItem("usuario")) {
+        usuario = JSON.parse(localStorage.getItem("usuario"));
+      }
+      if (localStorage.getItem("despesas")) {
+        despesas = JSON.parse(localStorage.getItem("despesas"));
+      }
+      if (localStorage.getItem("dividas")) {
+        dividas = JSON.parse(localStorage.getItem("dividas"));
+      }
+      if (localStorage.getItem("negocioNome")) {
+        negocioNome = localStorage.getItem("negocioNome");
+      }
+      if (localStorage.getItem("negocioGastos")) {
+        negocioGastos = JSON.parse(localStorage.getItem("negocioGastos"));
+      }
+      if (localStorage.getItem("negocioProdutos")) {
+        negocioProdutos = JSON.parse(localStorage.getItem("negocioProdutos"));
+      }
+    }
+    
+    // Dados do usuário e finanças
+    let usuario = {
+      nome: "",
+      salario: 0,         // Salário mensal (valor referência)
+      saldo: 0,           // Saldo corrente (dinheiro disponível)
+         };
+    let despesas = [];
+    let dividas = [];
+    // Dados do negócio
+    let negocioNome = "";
+    let negocioGastos = [];    // Cada gasto: { nome, valor }
+    let negocioProdutos = [];  // Cada produto: { nome, precoCompra, precoVenda, quantidade, retorno }
+
+    // Carrega dados armazenados, se houver
+    carregarDados();
+
+    function mostrarAlerta(mensagem) {
+      const alerta = document.createElement('div');
+      alerta.className = 'custom-alert';
+      alerta.innerHTML = `
+        <p>${mensagem.replace(/\n/g, '<br>')}</p>
+        <button onclick="this.parentElement.remove()">OK</button>
+      `;
+      document.body.appendChild(alerta);
+      salvarDados();
+    }
+
+    // Cadastro do usuário: insere nome, valor atual (definido como salário e saldo) e dia de pagamento.
+    function cadastrarUsuario() {
+      usuario.nome = prompt("Insira o seu nome:");
+      let valorAtual = parseFloat(prompt(`Insira a quantidade de dinheiro atual, ${usuario.nome}:`));
+      usuario.salario = isNaN(valorAtual) ? 0 : valorAtual;
+      usuario.saldo = usuario.salario; // Saldo inicial igual ao valor atual
+        mostrarAlerta(`Usuário cadastrado com sucesso!
+Bem-vindo: ${usuario.nome}
+Saldo ativo: ${usuario.saldo} Kz`);
+    }
+
+    // Checa o depósito automático: se hoje for igual ou posterior à data de pagamento
+    // e o depósito ainda não tiver sido feito neste dia, deposita uma fração do salário proporcional às horas passadas (considerando 31*24 horas no mês).
+    function checarPagamento() {
+      if (!usuario.dataPagamento) return;
+      let hoje = new Date();
+      let paymentDate = new Date(hoje.getFullYear(), hoje.getMonth(), usuario.dataPagamento, 0, 0, 0);
+      let paymentKey = paymentDate.toISOString().split("T")[0];
+      if (hoje >= paymentDate && usuario.ultimoPagamento !== paymentKey) {
+        let hoursPassed = (hoje - paymentDate) / (1000 * 60 * 60);
+        let hoursInMonth = 31 * 24;
+        let depositAmount = usuario.salario * (hoursPassed / hoursInMonth);
+        usuario.saldo += depositAmount;
+        usuario.ultimoPagamento = paymentKey;
+        mostrarAlerta(`Pagamento automático:
+Depósito de ${depositAmount.toFixed(2)} Kz realizado.
+Saldo atual: ${usuario.saldo.toFixed(2)} Kz.`);
+      }
+    }
+
+    // Verifica o depósito automático ao carregar a página.
+    window.onload = function() {
+      checarPagamento();
+    };
+
+    // Ao adicionar uma despesa, subtrai o valor do saldo.
+    function adicionarDespesa() {
+      let descricao = prompt("Digite o nome da despesa:");
+      let valor = parseFloat(prompt("Digite o valor da despesa:"));
+      if (!isNaN(valor)) {
+        despesas.push({ descricao, valor });
+        usuario.saldo -= valor;
+        mostrarAlerta(`Despesa de ${valor} Kz adicionada.
+Saldo atual: ${usuario.saldo.toFixed(2)} Kz.`);
+      } else {
+        mostrarAlerta("Valor inválido para despesa.");
+      }
+    }
+
+    function verGerirDespesas() {
+      let lista = "Lista de Despesas:\n";
+      despesas.forEach((despesa, index) => {
+        lista += `${index + 1}. ${despesa.descricao}: ${despesa.valor} Kz\n`;
+      });
+      if (despesas.length === 0) lista += "Nenhuma despesa cadastrada.\n";
+      let opcao = prompt(`${lista}\nDeseja remover alguma despesa? (1-Sim / 0-Não)`);
+      if (opcao === "1") {
+        let indice = parseInt(prompt("Digite o número da despesa a ser removida:")) - 1;
+        if (indice >= 0 && indice < despesas.length) {
+          usuario.saldo += despesas[indice].valor;
+          despesas.splice(indice, 1);
+          mostrarAlerta(`Despesa removida.
+Saldo atual: ${usuario.saldo.toFixed(2)} Kz.`);
+        } else {
+          mostrarAlerta("Número de despesa inválido.");
+        }
+      }
+    }
+
+    function estadoDespesas() {
+      let total = despesas.reduce((sum, despesa) => sum + despesa.valor, 0);
+      mostrarAlerta(`Total de despesas: ${total} Kz`);
+    }
+
+    // Ao adicionar uma dívida, subtrai o valor do saldo.
+    function adicionarDivida() {
+      let descricao = prompt("Digite o nome da dívida:");
+      let valor = parseFloat(prompt("Digite o valor da dívida:"));
+      if (!isNaN(valor)) {
+        dividas.push({ descricao, valor });
+        usuario.saldo -= valor;
+        mostrarAlerta(`Dívida de ${valor} Kz adicionada.
+Saldo atual: ${usuario.saldo.toFixed(2)} Kz.`);
+      } else {
+        mostrarAlerta("Valor inválido para dívida.");
+      }
+    }
+
+    function verGerirDividas() {
+      let lista = "Lista de Dívidas:\n";
+      dividas.forEach((divida, index) => {
+        lista += `${index + 1}. ${divida.descricao}: ${divida.valor} Kz\n`;
+      });
+      if (dividas.length === 0) lista += "Nenhuma dívida cadastrada.\n";
+      let opcao = prompt(`${lista}\nDeseja remover alguma dívida? (1-Sim / 0-Não)`);
+      if (opcao === "1") {
+        let indice = parseInt(prompt("Digite o número da dívida a ser removida:")) - 1;
+        if (indice >= 0 && indice < dividas.length) {
+          usuario.saldo += dividas[indice].valor;
+          dividas.splice(indice, 1);
+          mostrarAlerta(`Dívida removida.
+Saldo atual: ${usuario.saldo.toFixed(2)} Kz.`);
+        } else {
+          mostrarAlerta("Número de dívida inválido.");
+        }
+      }
+    }
+
+    function estadoDividas() {
+      let total = dividas.reduce((sum, divida) => sum + divida.valor, 0);
+      mostrarAlerta(`Total de dívidas: ${total} Kz`);
+    }
+
+    // Análise financeira: mostra os totais e o saldo atual.
+    function analisarSituacaoFinanceira() {
+      let totalDespesas = despesas.reduce((sum, despesa) => sum + despesa.valor, 0);
+      let totalDividas = dividas.reduce((sum, divida) => sum + divida.valor, 0);
+      let saldo = usuario.saldo;
+      let mensagem = `Análise da Situação Financeira:\n`;
+      mensagem += `Total em despesas: ${totalDespesas} Kz\n`;
+      mensagem += `Total em dívidas: ${totalDividas} Kz\n`;
+      mensagem += `Saldo atual: ${saldo.toFixed(2)} Kz\n`;
+      if (saldo < 0) {
+        mensagem += "⚠️ Atenção: Você está com saldo negativo!";
+      } else if (saldo === 0) {
+        mensagem += "⚠️ Atenção: Seu saldo está zerado.";
+      } else {
+        mensagem += "✅ Sua situação financeira está positiva.";
+      }
+      mostrarAlerta(mensagem);
+    }
+
+    // Função para "Fazer negócios": agora com cálculo de retorno baseado em quantidade.
+    function fazerNegocio() {
+      if (!negocioNome) {
+        let inputNome = prompt("Insira o nome do teu negócio (opcional):");
+        negocioNome = inputNome ? inputNome : "Negócio sem nome";
+      }
+      let continuar = true;
+      while (continuar) {
+        let menuMsg = `Negócio: ${negocioNome}\n\n`;
+        menuMsg += "Gastos cadastrados:\n";
+        if (negocioGastos.length === 0) {
+          menuMsg += "  Nenhum gasto cadastrado.\n";
+        } else {
+          negocioGastos.forEach((g, idx) => {
+            menuMsg += `  ${idx + 1}. ${g.nome} - Valor: ${g.valor} Kz\n`;
+          });
+        }
+        menuMsg += "\nProdutos cadastrados:\n";
+        if (negocioProdutos.length === 0) {
+          menuMsg += "  Nenhum produto cadastrado.\n";
+        } else {
+          negocioProdutos.forEach((p, idx) => {
+            menuMsg += `  ${idx + 1}. ${p.nome} - Compra: ${p.precoCompra} Kz, Venda: ${p.precoVenda} Kz, Quantidade: ${p.quantidade}, Retorno: ${p.retorno} Kz\n`;
+          });
+        }
+        menuMsg += "\nEscolha uma opção:\n";
+        menuMsg += "1 - Adicionar gasto\n";
+        menuMsg += "2 - Remover gasto\n";
+        menuMsg += "3 - Adicionar produto\n";
+        menuMsg += "4 - Remover produto\n";
+        menuMsg += "5 - Alterar nome do negócio\n";
+        menuMsg += "0 - Finalizar";
+        let opcao = prompt(menuMsg);
+        switch (opcao) {
+          case "1":
+            let nomeGasto = prompt("Insira o nome do gasto (ex: transporte):") || "Gasto sem nome";
+            let valorGasto = parseFloat(prompt("Insira o valor do gasto (em Kz):")) || 0;
+            negocioGastos.push({ nome: nomeGasto, valor: valorGasto });
+            break;
+          case "2":
+            if (negocioGastos.length === 0) {
+              mostrarAlerta("Nenhum gasto para remover.");
+            } else {
+              let removerIndiceGasto = parseInt(prompt("Digite o número do gasto a ser removido:")) - 1;
+              if (removerIndiceGasto >= 0 && removerIndiceGasto < negocioGastos.length) {
+                negocioGastos.splice(removerIndiceGasto, 1);
+                mostrarAlerta("Gasto removido com sucesso!");
+              } else {
+                mostrarAlerta("Número inválido.");
+              }
+            }
+            break;
+          case "3":
+            let nomeProduto = prompt("Insira o nome do teu produto (ex: Perfume):") || "Produto sem nome";
+            let precoCompra = parseFloat(prompt("Insira o valor que compraste o produto (em Kz):")) || 0;
+            let precoVenda = parseFloat(prompt("Insira o preço de que vendas o teu produto (em Kz):")) || 0;
+            let quantidade = parseInt(prompt("Insira a quantidade que compraste o teu produto:")) || 0;
+            let retorno = (precoVenda - precoCompra) * quantidade;
+            negocioProdutos.push({ nome: nomeProduto, precoCompra, precoVenda, quantidade, retorno });
+            break;
+          case "4":
+            if (negocioProdutos.length === 0) {
+              mostrarAlerta("Nenhum produto para remover.");
+            } else {
+              let removerIndiceProd = parseInt(prompt("Digite o número do produto a ser removido:")) - 1;
+              if (removerIndiceProd >= 0 && removerIndiceProd < negocioProdutos.length) {
+                negocioProdutos.splice(removerIndiceProd, 1);
+                mostrarAlerta("Produto removido com sucesso!");
+              } else {
+                mostrarAlerta("Número inválido.");
+              }
+            }
+            break;
+          case "5":
+            let novoNome = prompt("Insira o novo nome do negócio:");
+            if (novoNome) {
+              negocioNome = novoNome;
+              mostrarAlerta("Nome do negócio alterado com sucesso!");
+            }
+            break;
+          case "0":
+            continuar = false;
+            break;
+          default:
+            mostrarAlerta("Opção inválida. Tente novamente.");
+            break;
+        }
+      }
+      let totalGastos = negocioGastos.reduce((acc, g) => acc + g.valor, 0);
+      let totalRetorno = negocioProdutos.reduce((acc, p) => acc + p.retorno, 0);
+      // Atualiza o saldo: soma os retornos e subtrai os gastos
+      usuario.saldo += totalRetorno - totalGastos;
+      let mensagemFinal = `Negócio: ${negocioNome}\n` +
+                          `Total de gastos: ${totalGastos} Kz\n` +
+                          `Total de retorno dos produtos: ${totalRetorno} Kz\n` +
+                          `Saldo atualizado: ${usuario.saldo.toFixed(2)} Kz`;
+      mostrarAlerta(mensagemFinal);
+    }
+
+    function sobre() {
+      // Exemplo: pode ser alterado para exibir uma imagem ou informações de suporte.
+      document.getElementById("content").innerHTML = `<img src="Cartão de Visita a Marinho com Letra Serifa para Empresa_20250312_190242_0000.png" width="300" height="300" alt="Suporte">`;
+    }
+
+    function estatisticas() {
+      const totalDespesas = despesas.reduce((a, b) => a + b.valor, 0);
+      const totalDividas = dividas.reduce((a, b) => a + b.valor, 0);
+      const saldo = usuario.saldo;
+      const statsHTML = `
+        <div class="financial-dashboard">
+          <canvas id="financeChart"></canvas>
+        </div>
+      `;
+      document.getElementById('content').innerHTML = statsHTML;
+      const ctx = document.getElementById('financeChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Salário', 'Despesas', 'Dívidas', 'Saldo'],
+          datasets: [{
+            label: 'Valores em Kz',
+            data: [usuario.salario, totalDespesas, totalDividas, saldo],
+            backgroundColor: [
+              'rgba(0, 180, 216, 0.6)',
+              'rgba(255, 77, 109, 0.6)',
+              'rgba(255, 127, 0, 0.5)',
+              saldo >= 0 ? 'rgba(0, 255, 136, 0.6)' : 'rgba(0, 0, 0, 0.5)'
+            ],
+            borderColor: [
+              'rgba(0, 180, 216, 1)',
+              'rgba(255, 77, 109, 1)',
+              'rgba(255, 77, 109, 1)',
+              saldo >= 0 ? 'rgba(0, 255, 136, 1)' : 'rgba(0, 0, 0, 0.5)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+
+    // Acrescentar Renda Extra: adiciona valor ao saldo e atualiza o gráfico, se visível.
+    function acrescentarRendaExtra() {
+      let extra = parseFloat(prompt("Digite o valor da renda extra:"));
+      if (!isNaN(extra)) {
+        usuario.saldo += extra;
+        mostrarAlerta(`Renda extra de ${extra} Kz adicionada.
+Saldo atual: ${usuario.saldo.toFixed(2)} Kz.`);
+        if (document.getElementById('financeChart')) {
+          estatisticas();
+        }
+      } else {
+        mostrarAlerta("Valor inválido.");
+      }
+    }
+
+    // Salva os dados sempre que a página for fechada ou recarregada.
+    window.addEventListener("beforeunload", salvarDados);
+  </script>
+</body>
+</html>
